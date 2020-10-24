@@ -1,0 +1,120 @@
+#CH 8 Monthly Sales
+#2020 09 17
+#Monthly sales display with edit capability and CSV connection and datavalidation
+
+# Title Display
+import csv
+import sys
+
+SALES_FILE = "monthly_sales.csv"
+
+# Write CSV file
+def write_monthly(monthly_sales):
+    try:
+        with open(SALES_FILE, 'w', newline = '') as csv_file:
+            writer = csv.writer(csv_file)
+            for row in monthly_sales:
+                writer.writerow([row[0], int(row[1])])
+    except Exception as e:
+        print(type(e), e)
+        exit()
+
+# Read CSV file
+def read_monthly():
+    try:
+        monthly_sales = []
+        with open (SALES_FILE, newline = '') as csv_file:
+            reader = csv.reader(csv_file)
+            for row in reader:
+                if not row[1].isnumeric():
+                   row[1] = 0
+                monthly_sales.append([row[0], int(row[1])])
+        return monthly_sales
+    except FileNotFoundError:
+        print("Could not find file " + SALES_FILE + " file.")
+        #exit()
+    except Exception as e:
+        print(type(e), e)
+        #exit()
+# Display Menu
+def display_menu():
+    print("Command Menu")
+    print("=================================")
+    print("monthly - View monthly sales ")
+    print("yearly  - View yearly summary") 
+    print("edit	- Edit sales for a month")
+    print("exit	- Exit program")
+    print("=================================")
+    print()
+
+# Monthly
+def show_monthly(monthly_sales):
+    for month in monthly_sales:
+        print("%s - %d" %(month[0], int(month[1])))
+    print()
+
+# Yearly
+def show_yearly(monthly_sales):
+    month_count = 0
+    year_total = 0
+    for month in monthly_sales:
+        month_count += 1
+        year_total += int(month[1])
+    monthly_avg = year_total / month_count
+    print("Yearly total:\t% d" %(year_total))
+    print("Monthly average:% .2f" %(monthly_avg))
+    print()
+
+# Edit
+def edit_month (months, monthly_sales):
+    edit_month = input("Three-letter Month: ")
+    month_index = 99
+    for index, month in enumerate(months):
+        if edit_month.lower() == month.lower():
+            month_index = index
+            break
+    if month_index > 11:
+        print("Invalid three-letter month.")
+        print()
+        return 1
+
+    month_value = float(input("Sales Amount: "))
+    if isinstance(month_value, float):
+        monthly_sales[month_index][1] = month_value
+        write_monthly(monthly_sales)
+        print("Sales amount for %s was modified." %(monthly_sales[month_index][0]))
+        print()
+    else:
+        print("Invalid Amount.")
+        print()
+
+#Main program
+def main():
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    monthly_sales = read_monthly()
+
+    print("Monthly Sales Program  ")
+    print("=================================")
+    print()
+    
+    display_menu()
+    
+    while True:
+        command = input("Command: ")
+        print("=================================")
+        if command == "monthly":
+            show_monthly(monthly_sales)
+        elif command == "yearly":
+            show_yearly(monthly_sales)
+        elif command == "edit":
+            edit_month(months, monthly_sales)
+        elif command == "exit":
+            break
+        else:
+            print ("Not a valid option! Please try again.")
+            display_menu()
+    print ("Thank You, Bye")
+    
+if __name__ == "__main__":
+    main()
+
