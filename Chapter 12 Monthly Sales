@@ -1,0 +1,121 @@
+# CH 12 Monthly Sales
+# 2020 10 13
+# Monthly sales display import csv as dictionary 
+
+DATA_FILE = 'monthly_sales.txt'
+MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+
+# Import txt as dictionary
+def import_monthly_sales():
+    monthly_sales = {}
+    with open(DATA_FILE) as f:
+        for line in f:
+            line = line.rstrip('\n')
+            (key, val) = line.split('\t')
+            monthly_sales[key] = val
+    return monthly_sales
+
+# Write back to txt file
+def write_monthly_sales(monthly_sales):
+    with open(DATA_FILE, "w") as f:
+        for month, sales in monthly_sales.items():
+            try:
+                f.write("{0:s}\t{1:d}\n".format(month, int(sales)))
+            except:
+                print('Error writing to file.')
+                return False
+    return True
+    
+# Display Menu
+def display_menu():
+    print("Command Menu")
+    print("=================================")
+    print("view   - View monthly sales ")
+    print("totals - View yearly summary") 
+    print("edit   - Edit sales for a month")
+    print("exit   - Exit program")
+    print("=================================")
+    print()
+
+# Check for accurate month
+def check_month(month):
+    month_index = 99
+    for index, list_month in enumerate(MONTHS):
+        if month.lower() == list_month.lower():
+            month_index = index
+            break
+    if month_index > 11:
+        print("Invalid three-letter month.")
+        return False
+    return MONTHS[month_index]
+
+# Monthly
+def show_monthly(monthly_sales):
+    month = input('Three-letter Month: ')
+    month = check_month(month)
+    if month is not False:
+        print("Sales amount for {0:s} is {1:,.2f}.".format(month, float(monthly_sales[month])))
+    print()
+
+# Yearly
+def show_yearly(monthly_sales):
+    month_count = 0
+    year_total = 0
+    for month, sales in monthly_sales.items():
+        month_count += 1
+        year_total += int(monthly_sales[month])
+    monthly_avg = year_total / month_count
+    print("{0: <17}{1:>12,.2f}".format('Yearly total:', float(year_total)))
+    print("{0: <17}{1:>12,.2f}".format('Monthly average:', float(monthly_avg)))
+    print()
+
+# Edit
+def edit_month (monthly_sales):
+    edit_month = input("Three-letter Month: ")
+    edit_month = check_month(edit_month)
+    if edit_month is False:
+        print()
+        return False
+
+    month_value = float(input("Sales Amount: "))
+    if isinstance(month_value, float):
+        monthly_sales[edit_month] = month_value
+        write_monthly_sales(monthly_sales)
+        print("Sales amount for {0:s} is {1:,.2f}.".format(edit_month, monthly_sales[edit_month]))
+        print()
+    else:
+        print("Invalid Amount.")
+        print()
+
+# Main program
+def main():
+    
+    # Title Display
+    print("Monthly Sales Program  ")
+    print("=================================")
+    print()
+    
+    monthly_sales = import_monthly_sales()
+
+    display_menu()
+    
+    while True:
+        command = input("Command: ")
+        print("=================================")
+        if command == "view":
+            show_monthly(monthly_sales)
+        elif command == "totals":
+            show_yearly(monthly_sales)
+        elif command == "edit":
+            edit_month(monthly_sales)
+        elif command == "exit":
+            break
+        else:
+            print ("Not a valid option,. Please try again.")
+            print()
+    print (" Bye!")
+    
+if __name__ == "__main__":
+    main()
+
