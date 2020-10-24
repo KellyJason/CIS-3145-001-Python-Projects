@@ -1,0 +1,93 @@
+#CH 6 Monthly Sales
+#2020 09 10
+#Monthly sales display with edit capability 
+
+# Title Display
+print("Monthly Sales Program  ")
+print("=================================")
+print()
+
+def monthly_sales(monthly_sales):
+    dictionary =  {}
+    with open(monthly_sales, "r") as f:
+        for line in f:
+            s = line.strip().split(" ")
+            dictionary[s[0]] = int(s[1])
+        return dictionary
+
+#Display Menu
+def display_menu():
+    print("Command Menu")
+    print("=================================")
+    print("monthly - View monthly sales ")
+    print("yearly  - View yearly summary") 
+    print("edit	- Edit sales for a month")
+    print("exit	- Exit program")
+    print("=================================")
+    print()
+
+# Monthly
+def show_monthly(monthly_sales):
+    for month in monthly_sales:
+        print("%s - %d" %(month[0], month[1]))
+    print()
+
+# Yearly
+def show_yearly(monthly_sales):
+    month_count = 0
+    year_total = 0
+    for month in monthly_sales:
+        month_count += 1
+        year_total += int(month[1])
+    monthly_avg = year_total / month_count
+    print("Yearly total:\t% d" %(year_total))
+    print("Monthly average:% .2f" %(monthly_avg))
+    print()
+
+# Edit
+def edit_month (months, monthly_sales):
+    edit_month = input("Three-letter Month: ")
+    month_index = 99
+    for index, month in enumerate(months):
+        if edit_month.lower() == month.lower():
+            month_index = index
+            break
+    if month_index > 11:
+        print("Invalid three-letter month.")
+        print()
+        return 1
+
+    month_value = float(input("Sales Amount: "))
+    if isinstance(month_value, float):
+        monthly_sales[month_index][1] = month_value
+        print("Sales amount for %s was modified." %(monthly_sales[month_index][0]))
+        print()
+    else:
+        print("Invalid Amount.")
+        print()
+
+#Main program
+def main():
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    
+    display_menu()
+    
+    while True:
+        command = input("Command: ")
+        print("=================================")
+        if command == "monthly":
+            show_monthly(monthly_sales)
+        elif command == "yearly":
+            show_yearly(monthly_sales)
+        elif command == "edit":
+            edit_month(months, monthly_sales)
+        elif command == "exit":
+            break
+        else:
+            print ("Not a valid option,. Please try again.")
+    print ("Thank You, Bye")
+    
+if __name__ == "__main__":
+    main()
+
