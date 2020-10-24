@@ -1,0 +1,46 @@
+#CH 9-10 Quarterly Sales
+#9-29-2020
+#Sales Report
+
+
+sales_record = [[1540.0, 2010.0, 2450.0, 1845.0],	
+                [1130.0, 1168.0, 1847.0, 1491.0],
+                [1580.0, 2305.0, 2710.0, 1284.0],		
+                [1105.0, 4102.0, 2391.0, 1576.0]]
+
+quarters = ("Q1:", "Q2:", "Q3:", "Q4:")
+
+regions = (1, 2, 3, 4)
+
+# Total Sales overview
+print("Sales Report")
+print("{0: <12}{1: >9}{2: >12}{3: >12}{4: >12}".format("Region", "Q1", "Q2", "Q3", "Q4"))
+
+for c, sales in enumerate(sales_record, 1):
+    print("{0: <12}${1:,.2f}   ${2:,.2f}   ${3:,.2f}   ${4:,.2f}".format(c, sales[0], sales[1], sales[2], sales[3]))
+print()
+
+# Total Sales by Region
+print("Total Sales by Region")
+for c, sales in enumerate(sales_record, 1):
+    print("Region {0: <5}${1:,.2f}".format(c,  sum(sales)))
+print()
+
+
+# Total Sales by Quarter
+rows = len(sales_record)
+cols = len(sales_record[0])
+print("Total Sales by Quarter")
+for i in range(0, rows):  
+    quarter_sales = 0;  
+    for j in range(0, cols):  
+        quarter_sales = quarter_sales + sales_record[j][i]  
+    print("Q{0}: ${1:,.2f}".format(i, quarter_sales))
+print()  
+
+
+# Total Annual Sales
+yearly = sum(sum(sales_record, []))
+print("Total annual sales, all regions: " + "${0:,.2f}".format(yearly))
+print()
+
