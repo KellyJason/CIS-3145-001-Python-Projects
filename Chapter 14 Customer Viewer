@@ -1,0 +1,87 @@
+# Customer Viewer
+# 2020-10-21
+# Description of Project
+
+# Create Class
+class Customer():
+  
+  def __init__(self, customer_id, firstName, lastName, company, address, city, state, zip):
+    self.customer_id = customer_id
+    self.first_name = firstName
+    self.last_name = lastName
+    self.company_name = company
+    self.address = address
+    self.city = city
+    self.state = state
+    self.zip = zip
+
+  # Print as String Object
+  def full_address(self):
+    if not self.company_name:
+      full_address = f'\n{self.first_name} {self.last_name}\n' \
+                      + f'{self.address}\n' \
+                      + f'{self.city} {self.state}, {self.zip}\n'
+    else:
+      full_address = f'\n{self.first_name} {self.last_name}\n' \
+                      + f'{self.company_name}\n' \
+                      + f'{self.address}\n' \
+                      + f'{self.city} {self.state}, {self.zip}\n'
+    return full_address       
+
+================================================================================================================
+Main File
+
+# Customer Viewer
+# 2020-10-21
+# Description of Project
+
+import csv
+from Customer import *
+
+CUSTOMER_FILE = './customers.csv'
+
+# Read csv Object
+def read_customers():
+  customer_list = []
+  with open (CUSTOMER_FILE, newline = '') as f:
+    reader = csv.reader(f)
+    next(reader)
+    for line in reader:
+      customer_list.append(Customer(line[0], line[1], line[2], line[3],
+                                    line[4], line[5], line[6], line[7]))
+  return customer_list
+
+# Display Customer Object
+def display_customer_info(customers):
+  customer_id = input('Enter customer ID: ')
+  found = False
+  for customer in customers:
+    if customer.customer_id == customer_id:
+      print(customer.full_address())
+      found = True
+      break
+  if not found:
+    print ('\nNo customer with that ID.\n')
+
+def main():
+  customers = read_customers()
+  
+  print('Customer Viewer\nEnter the customer ID to view the customer address\n')
+  
+  while True:
+    display_customer_info(customers)
+    
+    response = input('Continue? (y/n): ')
+    if response == 'y':
+      print()
+      continue
+    elif response == 'n':
+      break
+    else:
+      print ('Invalid response. Expected y or n.')
+      break
+  
+  print ('\nBye!')
+
+if __name__ == '__main__':
+    main()
