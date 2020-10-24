@@ -1,0 +1,85 @@
+from datetime import datetime,timedelta
+import locale
+
+def get_departure_date():
+    while True:
+        departure_date = input("Enter date of departure (YYYY-MM-DD): ")
+        try:
+            datetime.strptime(departure_date, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format. Try again. ")
+            continue
+        return departure_date
+
+def get_departure_time():
+    while True:
+        departure_time = input("Enter time of departure (HH:MM AM/PM): ")
+        try:
+            datetime.strptime(departure_time, "%H:%M %p")
+        except ValueError:
+            print("Invalid date format. Try again.")
+            continue
+        return departure_time
+
+def get_miles():
+    while True:
+        miles = input("Enter miles: ")
+        try:
+            miles = int(miles)
+            if miles <= 0:
+                print("Enter a Number Greater than 0.\n")
+            else:
+                return miles
+        except ValueError:
+            print("Format Error . Please Try again\n")
+            continue
+
+def get_mph():
+    while True:
+        speed = input("Enter miles per hour: ")
+        try:
+            mph = int(speed)
+            if mph <= 0:
+                print("Enter a Number Greater than 0.\n")
+            else:
+                return mph
+        except ValueError:
+            print("Format Error . Please Try again\n")
+            continue
+        pass
+
+
+def estimated_travel_time(miles, mph, depart_datetime):
+    travel_hours = miles // mph
+    travel_minutes = int((miles / mph - travel_hours) * 60)
+    est_arrival_date = depart_datetime + timedelta(hours=travel_hours, minutes=travel_minutes)
+
+    print("\nEstimated travel time")
+    print("Hours:", travel_hours)
+    print("Minutes:", travel_minutes)
+    print("Estimated date of arrival:", est_arrival_date.strftime("%Y-%m-%d"))
+    print("Estimated time of arrival:", est_arrival_date.strftime("%I:%M %p"), "\n")
+
+
+def main():
+    print("Arrival Time Estimator\n")
+    
+    while True:
+        depart_date = get_departure_date()
+        depart_time = get_departure_time()
+        depart_datetime = datetime.strptime(depart_date + " " + depart_time, "%Y-%m-%d %H:%M %p")
+        miles = get_miles()
+        mph = get_mph()
+        estimated_travel_time(miles, mph, depart_datetime)
+
+        repeat = input("Continue? (y/n): ")
+        if repeat == "y":
+            print()
+            continue
+        else:
+            print("\nBye! ")
+            break
+
+if __name__ == "__main__":
+    main()
+
