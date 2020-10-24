@@ -1,0 +1,234 @@
+File IO
+
+# Project 2  Baseball Players
+# 2020 10 15
+# Payer Stats - CSV imported as Dictionary
+
+import csv
+
+# Import txt as dictionary
+def read_baseball_players(csv_file):
+    baseball_players = {}
+    with open(csv_file) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            baseball_players[row[0]] = row[1:]
+    return baseball_players
+
+# Write back to csv file
+def write_baseball_players(csv_file, baseball_players):
+    with open(csv_file, "w") as f:
+        for player in baseball_players.keys():
+            try:
+                f.write("{0},{1},{2},{3}\n".format(player, \
+                                                   baseball_players[player][0], \
+                                                   baseball_players[player][1], \
+                                                   baseball_players[player][2]))
+            except Exception as e:
+                print(f'Error writing to file: {e}')
+                return False
+    return True
+
+========================================================================================================================================
+
+Main File
+
+#Project 2  Baseball Players
+#2020 10 15
+#Baseball  Manager- Project #2 with edit capability and CSV imported as Dictionary
+
+import csv
+from datetime import date, datetime
+from FileIO import read_baseball_players, write_baseball_players
+
+PLAYER_FILE = "./players.csv"
+POSITIONS = ('C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'P')
+
+def print_separator_line():
+    print('=' * 60)
+
+def display_header():
+    print_separator_line()
+    print('{:^60}'.format('Baseball Team Manager'))
+    print()
+
+def display_menu():
+    print("MENU OPTIONS")
+    print("1 – Display lineup ")
+    print("2 – Add player") 
+    print("3 – Remove player")
+    print("4 – Move player")
+    print("5 – Edit player position")
+    print("6 – Edit player stats")
+    print("7 - Exit program")
+    print()
+
+def days_until_game():
+    today = datetime.today()
+    current_date = today.strftime("%Y-%m-%d")
+    print("{0: <20}{1:s}".format("CURRENT DATE:", current_date))
+    game_date = input("{0:<20}".format("GAME DATE: "))
+    try:
+        game_date = datetime.strptime(game_date, "%Y-%m-%d")
+    except:
+        print("Date format not recognized. Use format: 2020-01-01")
+        return False
+    days_delta = (game_date - today).days
+    if days_delta >= 0:
+        print("{0:<20}{1:d}".format("DAYS UNTIL GAME: ", days_delta))
+        print()
+    return True
+
+def display_positions():
+    print("POSITIONS")
+    positions = ', '.join(POSITIONS)
+    print(positions)
+    print_separator_line()
+
+# 1 - Show lineup
+def show_lineup(baseball_players):
+    print('{0:<3}{1:<31}{2:>6}{3:>6}{4:>6}{5:>8}'.format(' ','Player', 'POS', 'AB', 'H', 'AVG'))
+    print_separator_line()
+    counter = 0
+    for player in baseball_players.keys():
+        counter = counter + 1
+        avg = float(baseball_players[player][2]) / float(baseball_players[player][1])
+        print(f'{counter:<3d}{player:<31}{baseball_players[player][0]:>6}{baseball_players[player][1]:>6}{baseball_players[player][2]:>6}{avg:>8.3f}')
+    print()
+    
+# 2 - Add Player
+def add_player(baseball_players):
+    name = input("Name: ")
+    if not name:
+        print("Name is empty. \n")
+        return False
+    
+    if name in baseball_players.keys():
+        print("Player already exists. \n")
+        return False
+    
+    position = input("Position: ")
+    if position not in POSITIONS:
+        print("Invalid Position entered. \n")
+        return False
+
+    at_bats = int(input("At Bats: "))
+    if at_bats <= 0:
+        print("Invalid at bats entered. \n")
+        return False
+    
+    hits = int(input("Hits: "))
+    if hits <= 0:
+        print("Invalid hits entered. \n")
+        return False
+    
+    player = []
+    player.append(position)
+    player.append(at_bats)
+    player.append(hits)
+    baseball_players[name] = player
+    write_baseball_players(PLAYER_FILE, baseball_players)
+    print(str(name) + " was added. \n")
+
+# 3 - Remove Player
+def remove_player(baseball_players):
+    player = input("Enter player name to remove: ")
+    if player in baseball_players.keys():
+        try:
+            del baseball_players[player]
+            write_baseball_players(PLAYER_FILE, baseball_players)
+            print(f'{player} was deleted.\n')
+        except Exception as e:
+            print(f'Error deleting player from dictionary: {e}\n')
+            return False
+        return True
+    else:
+        print("Player does not exist.\n")
+        return True
+
+# 4 - Move Player
+def move_player(baseball_players):
+    cur_pos = int(input("Enter a current lineup number to move: ")) - 1
+    print(baseball_players[cur_pos][0] + " was selected.")
+    new_pos = int(input("Enter a new lineup number: ")) - 1
+    
+    if cur_pos < 1 or cur_pos > len(baseball_players):
+        print("Invalid player number. \n")
+        return False
+
+    baseball_players[cur_pos], baseball_players[new_pos] = baseball_players[new_pos], baseball_players[cur_pos]
+    print(baseball_players[new_pos][0] + " was moved.\n")
+    
+# 5 - Edit Player Postition
+def update_postion(baseball_players):
+    player = input("Enter a player name to edit: ")
+    if player in baseball_players.keys():
+        print("You selected " + player + " POS=" + baseball_players[player][0])
+        new_pos = input("Enter new Position: ")
+    else:
+        print("Player does not exist.\n")
+        return False
+    
+    if new_pos not in POSITIONS:
+        print("Invalid Position entered. \n")
+        return False
+
+    baseball_players[player][0] = new_pos
+    write_baseball_players(PLAYER_FILE, baseball_players)
+    print(player + " was updated.\n")
+
+# 6 - Edit Player Stats
+def edit_player_stats(baseball_players):
+    player = input("Enter a player name to edit: ")
+    if player in baseball_players.keys():
+        print("You selected " + player + " AB=" + baseball_players[player][1] + " H=" + baseball_players[player][2])
+    else:
+        print("Player does not exist.\n")
+        return False
+    
+    new_ab = int(input("Enter new AB: "))
+    if new_ab <= 0:
+        print("Invalid at bats entered. \n")
+        return False
+    baseball_players[player][1] = new_ab
+    
+    new_hits = int(input("Enter new H: "))
+    if new_hits <= 0:
+        print("Invalid hits entered. \n")
+        return False
+    baseball_players[player][2] = new_hits
+    write_baseball_players(PLAYER_FILE, baseball_players)
+    print(player + " was updated.\n")
+
+def main():
+    baseball_players = read_baseball_players(PLAYER_FILE)
+    
+    display_header()
+    days_until_game()
+    display_menu()
+    display_positions()
+    
+    while True:
+        command = input("Menu option: ")
+        if command == "1":
+            show_lineup(baseball_players)
+        elif command == "2":
+            add_player(baseball_players)
+        elif command == "3":
+            remove_player(baseball_players)
+        elif command == "4":
+            move_player(baseball_players)
+        elif command == "5":
+            update_postion(baseball_players)
+        elif command == "6":
+            edit_player_stats(baseball_players)
+        elif command == "7":
+            break
+        else:
+            print ("Not a valid option! Please try again.")
+            display_menu()
+    print ("Thank You, Bye")
+    
+if __name__ == "__main__":
+    main()
+
